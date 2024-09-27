@@ -10,6 +10,7 @@ function App() {
     telefono: '',
     correo: ''
   });
+  const [editIndex, setEditIndex] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,7 +19,15 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setEstudiantes([...estudiantes, formData]);
+    if (editIndex !== null) {
+      const nuevosEstudiantes = estudiantes.map((estudiante, index) =>
+        index === editIndex ? { ...formData } : estudiante
+      );
+      setEstudiantes(nuevosEstudiantes);
+      setEditIndex(null);
+    } else {
+      setEstudiantes([...estudiantes, { ...formData }]);
+    }
     setFormData({
       documento: '',
       nombre: '',
@@ -36,6 +45,17 @@ function App() {
       telefono: '',
       correo: ''
     });
+    setEditIndex(null);
+  };
+
+  const handleDelete = (index) => {
+    const nuevosEstudiantes = estudiantes.filter((_, i) => i !== index);
+    setEstudiantes(nuevosEstudiantes);
+  };
+
+  const handleEdit = (index) => {
+    setEditIndex(index);
+    setFormData({ ...estudiantes[index] });
   };
 
   return (
@@ -83,6 +103,8 @@ function App() {
           {estudiantes.map((estudiante, index) => (
             <li key={index}>
               {estudiante.documento} - {estudiante.nombre} {estudiante.apellido} - {estudiante.telefono} - {estudiante.correo}
+              <button onClick={() => handleEdit(index)}>Editar</button>
+              <button onClick={() => handleDelete(index)}>Eliminar</button>
             </li>
           ))}
         </ul>
